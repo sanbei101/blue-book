@@ -141,7 +141,7 @@ export default function ExplorePage() {
   }, [activeCategory]);
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 py-6">
+    <div className="mx-auto max-w-300 px-4 py-6">
       {/* 分类标签 */}
       <div className="mb-6">
         <CategoryTabs
@@ -156,7 +156,7 @@ export default function ExplorePage() {
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="mb-4 break-inside-avoid">
-              <Skeleton className="mb-2 h-[200px] w-full rounded-lg" />
+              <Skeleton className="mb-2 h-50 w-full rounded-lg" />
               <Skeleton className="mb-2 h-4 w-3/4" />
               <Skeleton className="h-3 w-1/2" />
             </div>

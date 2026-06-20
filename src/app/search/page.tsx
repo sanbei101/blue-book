@@ -86,7 +86,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[800px] px-4 py-6">
+    <div className="mx-auto max-w-200 px-4 py-6">
       {/* 搜索框 */}
       <div className="relative mb-6">
         <Input

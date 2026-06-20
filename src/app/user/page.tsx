@@ -71,7 +71,7 @@ export default function UserPage() {
   const [activeTab, setActiveTab] = useState("posts");
 
   return (
-    <div className="mx-auto max-w-[800px]">
+    <div className="mx-auto max-w-200">
       {/* 用户信息卡片 */}
       <div className="p-6">
         <div className="flex items-start gap-6">

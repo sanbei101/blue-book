@@ -105,7 +105,7 @@ export default function NotificationPage() {
     activeTab === "all" ? notifications : notifications.filter((n) => !n.isRead);
 
   return (
-    <div className="mx-auto max-w-[600px]">
+    <div className="mx-auto max-w-150">
       <div className="p-6">
         <h1 className="mb-6 text-xl font-bold">通知</h1>
 

@@ -38,7 +38,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="mb-6 px-4">
         <Link href="/" className="flex items-center gap-2">
-          <div className="bg-primary flex h-8 w-[68px] items-center justify-center rounded-full">
+          <div className="bg-primary flex h-8 w-17 items-center justify-center rounded-full">
             <span className="text-primary-foreground text-sm font-bold">小蓝书</span>
           </div>
         </Link>

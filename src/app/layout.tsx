@@ -23,17 +23,17 @@ export default function RootLayout({
       <body className={`${inter.className} bg-background min-h-screen`}>
         <div className="flex min-h-screen">
           {/* 侧边栏 - 桌面端显示 */}
-          <aside className="fixed top-0 left-0 z-40 hidden h-screen w-[228px] border-r lg:block">
+          <aside className="fixed top-0 left-0 z-40 hidden h-screen w-57 border-r lg:block">
             <Sidebar />
           </aside>
 
           {/* 主内容区 */}
-          <main className="flex-1 lg:ml-[228px]">
+          <main className="flex-1 lg:ml-57">
             {/* 头部 */}
             <Header />
 
             {/* 页面内容 */}
-            <div className="pt-[72px] pb-[48px] lg:pb-0">{children}</div>
+            <div className="pt-18 pb-12 lg:pb-0">{children}</div>
           </main>
 
           {/* 移动端底部导航 */}

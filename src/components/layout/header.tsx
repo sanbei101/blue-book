@@ -27,19 +27,19 @@ export function Header() {
   };
 
   return (
-    <header className="bg-background fixed top-0 right-0 left-0 z-50 h-[72px] border-b">
-      <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-6">
+    <header className="bg-background fixed top-0 right-0 left-0 z-50 h-18 border-b">
+      <div className="mx-auto flex h-full max-w-375 items-center justify-between px-6">
         {/* 桌面端Logo */}
         <div className="hidden lg:block">
           <Link href="/" className="flex items-center">
-            <div className="bg-primary flex h-8 w-[68px] items-center justify-center rounded-full">
+            <div className="bg-primary flex h-8 w-17 items-center justify-center rounded-full">
               <span className="text-primary-foreground text-sm font-bold">小蓝书</span>
             </div>
           </Link>
         </div>
 
         {/* 桌面端搜索栏 */}
-        <div className="mx-auto hidden max-w-[500px] flex-1 lg:flex">
+        <div className="mx-auto hidden max-w-125 flex-1 lg:flex">
           <div className="relative w-full">
             <Input
               type="text"
@@ -72,7 +72,7 @@ export function Header() {
           {!showMobileSearch ? (
             <>
               <Link href="/" className="flex items-center">
-                <div className="bg-primary flex h-8 w-[68px] items-center justify-center rounded-full">
+                <div className="bg-primary flex h-8 w-17 items-center justify-center rounded-full">
                   <span className="text-primary-foreground text-sm font-bold">小蓝书</span>
                 </div>
               </Link>

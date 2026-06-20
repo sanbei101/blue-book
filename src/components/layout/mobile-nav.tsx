@@ -33,7 +33,7 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <div className="bg-background flex h-[48px] items-center justify-around">
+    <div className="bg-background flex h-12 items-center justify-around">
       {navItems.map((item) => {
         const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
 

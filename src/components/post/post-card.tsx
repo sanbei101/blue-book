@@ -32,7 +32,7 @@ export function PostCard({ post }: PostCardProps) {
     <Card className="cursor-pointer overflow-hidden transition-shadow hover:shadow-lg">
       {/* 图片区域 */}
       <Link href={`/post/${post.id}`}>
-        <div className="relative aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-4/3 overflow-hidden">
           {post.images.length > 0 ? (
             <Image
               src={post.images[0]}
@@ -71,7 +71,7 @@ export function PostCard({ post }: PostCardProps) {
               <AvatarImage src={post.author.avatar} />
               <AvatarFallback>{post.author.nickname.charAt(0)}</AvatarFallback>
             </Avatar>
-            <span className="text-muted-foreground max-w-[80px] truncate text-xs">
+            <span className="text-muted-foreground max-w-20 truncate text-xs">
               {post.author.nickname}
             </span>
           </Link>

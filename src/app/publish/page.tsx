@@ -60,9 +60,9 @@ export default function PublishPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[800px]">
+    <div className="mx-auto max-w-200">
       {/* 顶部导航 */}
-      <div className="bg-background sticky top-[72px] z-30 flex items-center justify-between border-b px-4 py-3">
+      <div className="bg-background sticky top-18 z-30 flex items-center justify-between border-b px-4 py-3">
         <div className="flex items-center gap-4">
           <Link href="/explore">
             <Button variant="ghost" size="icon">
@@ -138,7 +138,7 @@ export default function PublishPage() {
             placeholder="添加正文内容..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[200px] resize-none border-0 px-0 focus-visible:ring-0"
+            className="min-h-50 resize-none border-0 px-0 focus-visible:ring-0"
           />
         </div>
 
@@ -164,7 +164,7 @@ export default function PublishPage() {
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">选择分类</span>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder="选择分类" />
             </SelectTrigger>
             <SelectContent>

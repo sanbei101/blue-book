@@ -2,10 +2,12 @@
 
 ## 技术栈选型
 
-- 前端: `Vinext`(`Next16`的vite重写版本) + `Tailwind CSS` + `shadcn/ui` + `Lucide Icons`
-- 后端: `Drizzle ORM` + `Neon Serverless`(PostgreSQL数据库)
+- 前端: `Vinext`(`Next16`的`vite`重写版本) + `Tailwind CSS` + `shadcn/ui` + `Lucide Icons`
+- 后端: `Drizzle ORM` + `Neon`(PostgreSQL数据库)
 
 ## 开发规范
 
-使用`oxlint`进行代码质量检查,用`oxfmt`进行代码格式化。
-请确保在提交代码前运行`pnpm fmt`和`pnpm lint`来保持代码的一致性和质量
+- 使用`oxlint`进行代码质量检查,用`oxfmt`进行代码格式化,请确保在提交代码前运行`pnpm fmt`和`pnpm lint`来保持代码的一致性和质量
+- 写前端代码时,请尽可能直接使用`shadcn/ui`的组件,并少写`Tailwind CSS`的类名来实现样式,禁止写自定义的css样式
+- 写后端代码时,请尽可能使用`Drizzle ORM`提供的API来操作数据库,禁止直接写SQL语句
+- 禁止使用`any`类型,请使用明确的类型定义(在`oxlint`中,使用`any`类型会被标记为错误)

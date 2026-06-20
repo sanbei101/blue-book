@@ -11,6 +11,7 @@
 ## 功能特性
 
 ### 核心功能
+
 - 📝 笔记发布（支持图文和视频）
 - 🖼️ 图片瀑布流展示
 - ❤️ 点赞、收藏、评论
@@ -19,6 +20,7 @@
 - 🔍 搜索功能
 
 ### 社交功能
+
 - 👥 关注/粉丝系统
 - 💬 评论和回复
 - 🏷️ 标签系统
@@ -84,10 +86,12 @@ src/
 ## API 接口
 
 ### 认证相关
+
 - `POST /api/auth/login` - 用户登录
 - `POST /api/auth/register` - 用户注册
 
 ### 笔记相关
+
 - `GET /api/posts` - 获取笔记列表
 - `POST /api/posts` - 创建笔记
 - `GET /api/posts/[id]` - 获取笔记详情
@@ -99,11 +103,13 @@ src/
 - `POST /api/posts/[id]/comments` - 发表评论
 
 ### 用户相关
+
 - `GET /api/users/[id]` - 获取用户信息
 - `PUT /api/users/[id]` - 更新用户信息
 - `POST /api/users/[id]/follow` - 关注/取消关注
 
 ### 其他
+
 - `GET /api/search` - 搜索笔记和用户
 - `GET /api/notifications` - 获取通知列表
 

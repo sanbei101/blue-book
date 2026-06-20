@@ -1,29 +1,44 @@
 import { eq, desc, sql } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import * as z from "zod";
 
+import { errorResponse, successResponse } from "@/app/api/core/common";
 import { db } from "@/db";
 import { posts, users, postImages } from "@/db/schema";
+
+const searchQuerySchema = z.object({
+  keyword: z.string().default(""),
+  type: z.enum(["all", "posts", "users"]).default("all"),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
+export type SearchQuery = z.infer<typeof searchQuerySchema>;
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const keyword = searchParams.get("keyword") || "";
-    const type = searchParams.get("type") || "all"; // all, posts, users
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    const parsed = searchQuerySchema.safeParse({
+      keyword: searchParams.get("keyword"),
+      type: searchParams.get("type"),
+      page: searchParams.get("page"),
+      limit: searchParams.get("limit"),
+    });
+    if (!parsed.success) {
+      const readableError = z.prettifyError(parsed.error);
+      return errorResponse(readableError, 424);
+    }
+
+    const { keyword, type, page, limit } = parsed.data;
 
     if (!keyword) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          posts: [],
-          users: [],
-          pagination: {
-            page: 1,
-            limit,
-            total: 0,
-            totalPages: 0,
-          },
+      return successResponse({
+        posts: [],
+        users: [],
+        pagination: {
+          page: 1,
+          limit,
+          total: 0,
+          totalPages: 0,
         },
       });
     }
@@ -128,28 +143,25 @@ export async function GET(request: Request) {
       totalUsers = countResult[0]?.count || 0;
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        posts: postsList,
-        users: usersList,
-        pagination: {
-          page,
-          limit,
-          total:
-            type === "posts" ? totalPosts : type === "users" ? totalUsers : totalPosts + totalUsers,
-          totalPages: Math.ceil(
-            (type === "posts"
-              ? totalPosts
-              : type === "users"
-                ? totalUsers
-                : totalPosts + totalUsers) / limit,
-          ),
-        },
+    return successResponse({
+      posts: postsList,
+      users: usersList,
+      pagination: {
+        page,
+        limit,
+        total:
+          type === "posts" ? totalPosts : type === "users" ? totalUsers : totalPosts + totalUsers,
+        totalPages: Math.ceil(
+          (type === "posts"
+            ? totalPosts
+            : type === "users"
+              ? totalUsers
+              : totalPosts + totalUsers) / limit,
+        ),
       },
     });
   } catch (error) {
     console.error("搜索失败:", error);
-    return NextResponse.json({ error: "搜索失败" }, { status: 500 });
+    return errorResponse("搜索失败", 500);
   }
 }

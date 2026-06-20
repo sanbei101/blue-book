@@ -1,17 +1,43 @@
 import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { createSelectSchema } from "drizzle-zod";
+import * as z from "zod";
 
+import { errorResponse, successResponse } from "@/app/api/core/common";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
+const loginSchema = createSelectSchema(users, {
+  userId: z.string().min(1, "用户ID不能为空"),
+  password: z.string().min(1, "密码不能为空"),
+}).pick({
+  userId: true,
+  password: true,
+});
+
+export type LoginRequest = z.infer<typeof loginSchema>;
+
+const userSelectSchema = createSelectSchema(users).pick({
+  id: true,
+  userId: true,
+  nickname: true,
+  avatar: true,
+  email: true,
+});
+
+export type LoginResponse = {
+  token: string;
+  user: z.infer<typeof userSelectSchema>;
+};
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { userId, password } = body;
-
-    if (!userId || !password) {
-      return NextResponse.json({ error: "用户ID和密码不能为空" }, { status: 400 });
+    const body: unknown = await request.json();
+    const parsed = loginSchema.safeParse(body);
+    if (!parsed.success) {
+      const readableError = z.prettifyError(parsed.error);
+      return errorResponse(readableError, 424);
     }
+    const { userId, password } = parsed.data;
 
     // 查找用户
     const user = await db.query.users.findFirst({
@@ -19,13 +45,12 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+      return errorResponse("用户不存在", 404);
     }
 
-    // TODO: 验证密码（需要使用bcrypt等加密库）
-    // if (user.password !== hashedPassword) {
-    //   return NextResponse.json({ error: "密码错误" }, { status: 401 });
-    // }
+    if (user.password !== password) {
+      return errorResponse("密码错误", 401);
+    }
 
     // 更新最后登录时间
     await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
@@ -33,21 +58,18 @@ export async function POST(request: Request) {
     // TODO: 生成JWT token
     const token = "mock-jwt-token";
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        token,
-        user: {
-          id: user.id,
-          userId: user.userId,
-          nickname: user.nickname,
-          avatar: user.avatar,
-          email: user.email,
-        },
+    return successResponse<LoginResponse>({
+      token,
+      user: {
+        id: user.id,
+        userId: user.userId,
+        nickname: user.nickname,
+        avatar: user.avatar,
+        email: user.email,
       },
     });
   } catch (error) {
     console.error("登录失败:", error);
-    return NextResponse.json({ error: "登录失败，请稍后重试" }, { status: 500 });
+    return errorResponse("登录失败，请稍后重试", 500);
   }
 }

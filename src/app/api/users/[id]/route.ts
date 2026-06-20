@@ -1,17 +1,71 @@
 import { eq, and } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { createSelectSchema, createUpdateSchema } from "drizzle-zod";
+import * as z from "zod";
 
+import { errorResponse, successResponse } from "@/app/api/core/common";
 import { db } from "@/db";
 import { users, follows } from "@/db/schema";
+
+const userIdSchema = z.object({
+  id: z.coerce.number().int().min(1, "无效的用户ID"),
+});
+
+const updateUserSchema = createUpdateSchema(users, {
+  nickname: z.string().min(1).optional(),
+  avatar: z.string().optional(),
+  bio: z.string().optional(),
+  location: z.string().optional(),
+  gender: z.string().optional(),
+  zodiacSign: z.string().optional(),
+  mbti: z.string().optional(),
+  education: z.string().optional(),
+  major: z.string().optional(),
+}).pick({
+  nickname: true,
+  avatar: true,
+  bio: true,
+  location: true,
+  gender: true,
+  zodiacSign: true,
+  mbti: true,
+  education: true,
+  major: true,
+  interests: true,
+});
+
+export type UpdateUserRequest = z.infer<typeof updateUserSchema>;
+
+const userSelectSchema = createSelectSchema(users).pick({
+  id: true,
+  userId: true,
+  nickname: true,
+  avatar: true,
+  bio: true,
+  location: true,
+  gender: true,
+  zodiacSign: true,
+  mbti: true,
+  education: true,
+  major: true,
+  interests: true,
+  verified: true,
+  followCount: true,
+  fansCount: true,
+  likeCount: true,
+  createdAt: true,
+});
+
+export type UserResponse = z.infer<typeof userSelectSchema> & { isFollowed: boolean };
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const userId = parseInt(id);
-
-    if (isNaN(userId)) {
-      return NextResponse.json({ error: "无效的用户ID" }, { status: 400 });
+    const parsed = userIdSchema.safeParse({ id });
+    if (!parsed.success) {
+      const readableError = z.prettifyError(parsed.error);
+      return errorResponse(readableError, 424);
     }
+    const userId = parsed.data.id;
 
     // 查询用户信息
     const user = await db.query.users.findFirst({
@@ -19,7 +73,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     });
 
     if (!user) {
-      return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+      return errorResponse("用户不存在", 404);
     }
 
     // TODO: 从JWT token获取当前用户ID
@@ -30,92 +84,65 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       where: and(eq(follows.followerId, currentUserId), eq(follows.followingId, userId)),
     });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          userId: user.userId,
-          nickname: user.nickname,
-          avatar: user.avatar,
-          bio: user.bio,
-          location: user.location,
-          gender: user.gender,
-          zodiacSign: user.zodiacSign,
-          mbti: user.mbti,
-          education: user.education,
-          major: user.major,
-          interests: user.interests,
-          verified: user.verified,
-          followCount: user.followCount,
-          fansCount: user.fansCount,
-          likeCount: user.likeCount,
-          createdAt: user.createdAt,
-          isFollowed: !!followRelation,
-        },
-      },
+    return successResponse<UserResponse>({
+      id: user.id,
+      userId: user.userId,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      bio: user.bio,
+      location: user.location,
+      gender: user.gender,
+      zodiacSign: user.zodiacSign,
+      mbti: user.mbti,
+      education: user.education,
+      major: user.major,
+      interests: user.interests,
+      verified: user.verified,
+      followCount: user.followCount,
+      fansCount: user.fansCount,
+      likeCount: user.likeCount,
+      createdAt: user.createdAt,
+      isFollowed: !!followRelation,
     });
   } catch (error) {
     console.error("获取用户信息失败:", error);
-    return NextResponse.json({ error: "获取用户信息失败" }, { status: 500 });
+    return errorResponse("获取用户信息失败", 500);
   }
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const userId = parseInt(id);
-    const body = await request.json();
+    const parsedId = userIdSchema.safeParse({ id });
+    if (!parsedId.success) {
+      const readableError = z.prettifyError(parsedId.error);
+      return errorResponse(readableError, 424);
+    }
+    const userId = parsedId.data.id;
 
-    if (isNaN(userId)) {
-      return NextResponse.json({ error: "无效的用户ID" }, { status: 400 });
+    const body: unknown = await request.json();
+    const parsed = updateUserSchema.safeParse(body);
+    if (!parsed.success) {
+      const readableError = z.prettifyError(parsed.error);
+      return errorResponse(readableError, 424);
     }
 
     // TODO: 验证用户权限（只能修改自己的信息）
 
-    const {
-      nickname,
-      avatar,
-      bio,
-      location,
-      gender,
-      zodiacSign,
-      mbti,
-      education,
-      major,
-      interests,
-    } = body;
-
     // 更新用户信息
-    const updatedUser = await db
+    const [updatedUser] = await db
       .update(users)
-      .set({
-        nickname,
-        avatar,
-        bio,
-        location,
-        gender,
-        zodiacSign,
-        mbti,
-        education,
-        major,
-        interests,
-      })
+      .set(parsed.data)
       .where(eq(users.id, userId))
       .returning();
 
-    if (!updatedUser[0]) {
-      return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+    if (!updatedUser) {
+      return errorResponse("用户不存在", 404);
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        user: updatedUser[0],
-      },
-    });
+    return successResponse({ user: updatedUser });
   } catch (error) {
     console.error("更新用户信息失败:", error);
-    return NextResponse.json({ error: "更新用户信息失败" }, { status: 500 });
+    return errorResponse("更新用户信息失败", 500);
   }
 }

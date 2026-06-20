@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db";
@@ -30,7 +30,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // 减少收藏数
       await db
         .update(posts)
-        .set({ collectCount: posts.collectCount - 1 })
+        .set({ collectCount: sql`${posts.collectCount} - 1` })
         .where(eq(posts.id, postId));
 
       return NextResponse.json({
@@ -47,7 +47,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // 增加收藏数
       await db
         .update(posts)
-        .set({ collectCount: posts.collectCount + 1 })
+        .set({ collectCount: sql`${posts.collectCount} + 1` })
         .where(eq(posts.id, postId));
 
       return NextResponse.json({

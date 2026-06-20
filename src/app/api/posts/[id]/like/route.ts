@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db";
@@ -34,7 +34,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // 减少点赞数
       await db
         .update(posts)
-        .set({ likeCount: posts.likeCount - 1 })
+        .set({ likeCount: sql`${posts.likeCount} - 1` })
         .where(eq(posts.id, postId));
 
       return NextResponse.json({
@@ -52,7 +52,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // 增加点赞数
       await db
         .update(posts)
-        .set({ likeCount: posts.likeCount + 1 })
+        .set({ likeCount: sql`${posts.likeCount} + 1` })
         .where(eq(posts.id, postId));
 
       return NextResponse.json({

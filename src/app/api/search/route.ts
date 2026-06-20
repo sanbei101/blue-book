@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     let postsList: Array<{
       id: number;
-      title: string | null;
+      title: string;
       content: string | null;
       type: number;
       viewCount: number;
@@ -42,10 +42,10 @@ export async function GET(request: Request) {
       commentCount: number;
       createdAt: Date;
       author: {
-        id: number | null;
-        nickname: string | null;
+        id: number;
+        nickname: string;
         avatar: string | null;
-      };
+      } | null;
       images: string[];
     }> = [];
     let usersList: Array<{

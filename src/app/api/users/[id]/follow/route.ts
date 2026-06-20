@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db";
@@ -35,12 +35,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // 减少关注数和粉丝数
       await db
         .update(users)
-        .set({ followCount: users.followCount - 1 })
+        .set({ followCount: sql`${users.followCount} - 1` })
         .where(eq(users.id, followerId));
 
       await db
         .update(users)
-        .set({ fansCount: users.fansCount - 1 })
+        .set({ fansCount: sql`${users.fansCount} - 1` })
         .where(eq(users.id, followingId));
 
       return NextResponse.json({
@@ -57,12 +57,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // 增加关注数和粉丝数
       await db
         .update(users)
-        .set({ followCount: users.followCount + 1 })
+        .set({ followCount: sql`${users.followCount} + 1` })
         .where(eq(users.id, followerId));
 
       await db
         .update(users)
-        .set({ fansCount: users.fansCount + 1 })
+        .set({ fansCount: sql`${users.fansCount} + 1` })
         .where(eq(users.id, followingId));
 
       return NextResponse.json({

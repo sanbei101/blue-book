@@ -14,6 +14,6 @@
 
 - 后端接受前端的参数时候,需要使用`zod`进行参数验证,需要在`src/types/xx.ts`中写`schema`再导出为类型,例如`src/types/auth.ts`
 
-- 后端返回数据时候,需要使用统一的接口格式,需要使用`src/types/core.ts`中定义的`ApiResponse`接口,并必须使用`errorResponse`和`successResponse`函数来返回数据
+- 后端返回数据时候,需要使用统一的接口格式,需要使用`src/types/core.ts`中定义的`ApiResponse`接口,禁止直接使用`NextResponse.json`来返回数据,并必须使用`errorResponse`和`successResponse`函数来返回数据
 
 - 前端接受后端返回的数据时候,需要使用`src/types/core.ts`中定义的`ApiResponse`接口来进行泛型类型定义,并根据`success`字段来处理不同的逻辑

@@ -2,9 +2,9 @@ import { eq, or } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 
+import { errorResponse, successResponse } from "@/app/api/core/common";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { errorResponse, successResponse } from "@/types/core";
 
 export const registerSchema = createInsertSchema(users, {
   userId: z.string().min(3, "用户名必须在3-20个字符之间").max(20),

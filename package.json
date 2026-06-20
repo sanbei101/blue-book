@@ -36,6 +36,7 @@
     "drizzle-kit": "^0.31.10",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
+    "oxlint-tsgolint": "^0.23.0",
     "react-server-dom-webpack": "^19.2.7",
     "shadcn": "^4.11.0",
     "tailwindcss": "^4.3.1",
